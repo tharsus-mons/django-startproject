@@ -18,99 +18,85 @@ bootstrap *ARGS:
         echo ".env created"
     fi
 
-    if [ -n "${VIRTUAL_ENV-}" ]; then
-        python -m pip install --upgrade pip uv
-    else
-        echo "Skipping pip steps as VIRTUAL_ENV is not set"
+    # Create virtual environment if it doesn't exist
+    if [ ! -d ".venv" ]; then
+        echo "Creating virtual environment..."
+        uv venv
     fi
+
+    # Activate virtual environment
+    source .venv/bin/activate
 
     if [ ! -f "requirements.txt" ]; then
         uv pip compile requirements.in --output-file requirements.txt
         echo "requirements.txt created"
     fi
 
-    just upgrade
+    uv pip install -r requirements.txt
 
-    if [ -f "compose.yml" ]; then
-        just build {{ ARGS }} --pull
+    just db-up
+    echo "Waiting for database to be ready..."
+    sleep 3
+
+    echo "Running migrations..."
+    uv run python -m manage migrate
+
+    if [ -z "${DJANGO_SUPERUSER_USERNAME-}" ] || [ -z "${DJANGO_SUPERUSER_PASSWORD-}" ] || [ -z "${DJANGO_SUPERUSER_EMAIL-}" ]; then
+        echo "Creating superuser interactively..."
+        uv run python -m manage createsuperuser
+    else
+        echo "Creating superuser from environment variables..."
+        uv run python -m manage createsuperuser --noinput
     fi
 
-@build *ARGS:
-    docker compose build {{ ARGS }}
+@db-up *ARGS:
+    docker compose up -d db {{ ARGS }}
 
-@console:
-    docker compose run --rm --no-deps utility /bin/bash
-
-@down *ARGS:
-    docker compose down {{ ARGS }}
+@db-down *ARGS:
+    docker compose stop db {{ ARGS }}
+    docker compose rm -f db {{ ARGS }}
 
 @lint *ARGS:
     uv run --with pre-commit-uv pre-commit run {{ ARGS }} --all-files
 
 @lock *ARGS:
-    docker compose run \
-        --no-deps \
-        --rm \
-        utility \
-            bash -c "uv pip compile {{ ARGS }} ./requirements.in \
-                --output-file ./requirements.txt"
+    uv pip compile {{ ARGS }} ./requirements.in --output-file ./requirements.txt
 
 @logs *ARGS:
-    docker compose logs {{ ARGS }}
+    docker compose logs db {{ ARGS }}
 
 @manage *ARGS:
-    docker compose run --rm --no-deps utility python -m manage {{ ARGS }}
+    uv run python -m manage {{ ARGS }}
 
 # dump database to file
 @pg_dump file='db.dump':
-    docker compose run \
-        --no-deps \
-        --rm \
+    docker compose exec \
         db pg_dump \
-            --dbname "${DATABASE_URL:=postgres://postgres@db/postgres}" \
+            --dbname "${DATABASE_URL:=postgres://postgres@localhost/postgres}" \
             --file /src/{{ file }} \
             --format=c \
             --verbose
 
 # restore database dump from file
 @pg_restore file='db.dump':
-    docker compose run \
-        --no-deps \
-        --rm \
+    docker compose exec \
         db pg_restore \
             --clean \
-            --dbname "${DATABASE_URL:=postgres://postgres@db/postgres}" \
+            --dbname "${DATABASE_URL:=postgres://postgres@localhost/postgres}" \
             --if-exists \
             --no-owner \
             --verbose \
             /src/{{ file }}
 
-@restart *ARGS:
-    docker compose restart {{ ARGS }}
+@restart-db:
+    just db-down
+    just db-up
 
-@run *ARGS:
-    docker compose run \
-        --no-deps \
-        --rm \
-        utility {{ ARGS }}
-
-@start *ARGS="--detach":
-    just up {{ ARGS }}
-
-@stop *ARGS:
-    just down {{ ARGS }}
-
-@tail:
-    just logs --follow
+@runserver *ARGS:
+    uv run python -m manage runserver {{ ARGS }}
 
 @test *ARGS:
-    docker compose run \
-        --no-deps \
-        --rm \
-        utility python -m pytest {{ ARGS }}
-
-@up *ARGS:
-    docker compose up {{ ARGS }}
+    uv run python -m pytest {{ ARGS }}
 
 @upgrade:
     just lock --upgrade
