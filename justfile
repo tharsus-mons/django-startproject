@@ -18,6 +18,12 @@ bootstrap *ARGS:
         echo ".env created"
     fi
 
+    # Create fly.toml if it doesn't exist
+    if [ ! -f "fly.toml" ] && [ -f "fly.toml-tpl" ]; then
+        cp fly.toml-tpl fly.toml
+        echo "fly.toml created"
+    fi
+
     # Create virtual environment if it doesn't exist
     if [ ! -d ".venv" ]; then
         echo "Creating virtual environment..."
