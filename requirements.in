@@ -8,6 +8,8 @@ psycopg>=3.1
 django-ninja>=1.0
 pytest>=7.4
 pytest-django>=4.7
+gunicorn>=21.2.0
+supervisor>=4.2.5
 
 # Optional: Uncomment to enable Clerk authentication
 # clerk-backend-api>=0.1

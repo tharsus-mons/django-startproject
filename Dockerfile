@@ -18,18 +18,21 @@ RUN --mount=type=cache,target=/root/.cache,sharing=locked,id=pip \
 RUN --mount=type=cache,target=/root/.cache,sharing=locked,id=pip \
     python -m uv pip install --system --requirement /tmp/requirements.txt
 
-# ------------------------------------------------------------
-# Dev/testing layer
-# ------------------------------------------------------------
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    supervisor \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 FROM builder AS release
 
 COPY . /src/
-
 WORKDIR /src/
 
-CMD ["python", "-m", "manage", "runserver", "--skip-checks", "0.0.0.0:8000"]
+# Copy supervisord configuration
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# ------------------------------------------------------------
-# TODO: Add Production notes
-# ------------------------------------------------------------
+EXPOSE 8000
+
+# Use supervisord as the entry point
+CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
