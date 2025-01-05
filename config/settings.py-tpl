@@ -10,12 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/{{ docs_version }}/ref/settings/
 """
 
+import sys
 import environs
 
 env = environs.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = environs.Path(__file__).resolve(strict=True).parent.parent
+sys.path.append(str(BASE_DIR / "apps"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/{{ docs_version }}/howto/deployment/checklist/
@@ -50,7 +52,9 @@ INSTALLED_APPS += []
 
 # Our apps
 
-INSTALLED_APPS += []
+INSTALLED_APPS += [
+    "core.apps.CoreConfig",
+]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -148,3 +152,13 @@ CACHES = {"default": env.dj_cache_url("CACHE_URL", default="locmem://")}
 ADMIN_URL = env("ADMIN_URL", default="admin/")
 
 SITE_ID = 1
+
+# Custom user model
+AUTH_USER_MODEL = "core.User"
+
+# Clerk Authentication (optional)
+USE_CLERK = env.bool("USE_CLERK", default=False)
+if USE_CLERK:
+    CLERK_SECRET_KEY = env("CLERK_SECRET_KEY", default=None)
+    CLERK_JWT_KEY = env("CLERK_JWT_KEY", default=None)
+    FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:3000")

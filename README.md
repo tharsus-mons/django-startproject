@@ -155,3 +155,73 @@ Contributions, issues and feature requests are welcome!<br />Feel free to check 
 ## Show your support
 
 Give a ⭐️ if this project helped you!
+
+# {{ project_name }}
+
+## Features
+
+- Custom User model with email authentication
+- API endpoints using django-ninja
+- Optional Clerk authentication integration
+- PostgreSQL database
+- Docker setup with docker-compose
+- pytest for testing
+
+## Getting Started
+
+1. Create a new project using this template:
+   ```bash
+   django-admin startproject myproject --template=https://github.com/yourusername/django-startproject/archive/main.zip
+   ```
+
+2. Copy `.env-dist` to `.env` and update the values:
+   ```bash
+   cp .env-dist .env
+   ```
+
+3. Run the development server:
+   ```bash
+   just bootstrap
+   just up
+   ```
+
+## Authentication
+
+### Default Authentication
+
+By default, the project uses token-based authentication with django-ninja's built-in `AuthBearer` class.
+
+### Clerk Authentication (Optional)
+
+To enable Clerk authentication:
+
+1. Uncomment the Clerk dependency in `requirements.in`:
+   ```
+   clerk-backend-api>=0.1
+   ```
+
+2. Update your dependencies:
+   ```bash
+   just lock --upgrade
+   ```
+
+3. Configure Clerk in your `.env` file:
+   ```
+   USE_CLERK=True
+   CLERK_SECRET_KEY=your-clerk-secret-key
+   CLERK_JWT_KEY=your-clerk-jwt-key
+   FRONTEND_URL=http://localhost:3000
+   ```
+
+## API Endpoints
+
+- `GET /api/users/me/` - Get current user info
+- `PATCH /api/users/me/` - Update user info
+- `DELETE /api/users/me/` - Delete user account
+
+## Development
+
+- Run tests: `just test`
+- Run linting: `just lint`
+- Start development server: `just up`
+- Stop development server: `just down`
