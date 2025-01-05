@@ -17,6 +17,7 @@ dependencies = [
     "gunicorn>=21.2.0",
     "supervisor>=4.2.5",
     "setuptools>=69.0.3",
+    "Werkzeug>=3.0.0",
 ]
 
 [project.optional-dependencies]
