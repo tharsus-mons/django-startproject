@@ -13,7 +13,9 @@ https://docs.djangoproject.com/en/{{ docs_version }}/ref/settings/
 import sys
 import environs
 
+# Load .env file
 env = environs.Env()
+env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = environs.Path(__file__).resolve(strict=True).parent.parent
