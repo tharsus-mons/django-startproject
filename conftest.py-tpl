@@ -12,8 +12,6 @@ logging.disable(logging.CRITICAL)
 def use_test_settings(settings):
     settings.DEBUG = False
 
-    settings.EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
-
     settings.MIDDLEWARE = [
         middleware
         for middleware in settings.MIDDLEWARE

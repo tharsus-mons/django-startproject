@@ -111,16 +111,11 @@ bootstrap *ARGS:
     #!/usr/bin/env bash
     set -euo pipefail
 
-    if [ ! -f "fly.toml" ]; then
-        flyctl launch \
-            --no-deploy \
-            --copy-config \
-            --dockerfile Dockerfile \
-            {{ ARGS }}
-        echo "fly.toml created"
-    else
-        echo "fly.toml already exists"
-    fi
+    flyctl launch \
+        --no-deploy \
+        --copy-config \
+        --dockerfile Dockerfile \
+        {{ ARGS }}
 
 @fly-deploy *ARGS:
     flyctl deploy {{ ARGS }}
