@@ -18,9 +18,9 @@ bootstrap *ARGS:
         echo ".env created"
     fi
 
-    # Create fly.toml if it doesn't exist
     if [ ! -f "fly.toml" ] && [ -f "fly.toml-tpl" ]; then
         cp fly.toml-tpl fly.toml
+        rm fly.toml-tpl
         echo "fly.toml created"
     fi
 
@@ -106,3 +106,21 @@ bootstrap *ARGS:
 
 @upgrade:
     just lock --upgrade
+
+@fly-launch *ARGS:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    if [ ! -f "fly.toml" ]; then
+        flyctl launch \
+            --no-deploy \
+            --copy-config \
+            --dockerfile Dockerfile \
+            {{ ARGS }}
+        echo "fly.toml created"
+    else
+        echo "fly.toml already exists"
+    fi
+
+@fly-deploy *ARGS:
+    flyctl deploy {{ ARGS }}

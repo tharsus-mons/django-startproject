@@ -27,4 +27,4 @@ console_command = ''
 
 [[statics]]
   guest_path = '/src/static'
-  url_prefix = '/static/' 
+  url_prefix = '/static/'
