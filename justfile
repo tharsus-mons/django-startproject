@@ -33,12 +33,7 @@ bootstrap *ARGS:
     # Activate virtual environment
     source .venv/bin/activate
 
-    if [ ! -f "requirements.txt" ]; then
-        uv pip compile requirements.in --output-file requirements.txt
-        echo "requirements.txt created"
-    fi
-
-    uv pip install -r requirements.txt
+    uv pip sync pyproject.toml
 
     just db-up
     echo "Waiting for database to be ready..."
@@ -66,7 +61,7 @@ bootstrap *ARGS:
     uv run --with pre-commit-uv pre-commit run {{ ARGS }} --all-files
 
 @lock *ARGS:
-    uv pip compile {{ ARGS }} ./requirements.in --output-file ./requirements.txt
+    uv pip compile {{ ARGS }} pyproject.toml
 
 @logs *ARGS:
     docker compose logs db {{ ARGS }}
