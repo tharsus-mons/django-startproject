@@ -19,17 +19,24 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 ENV UV_LINK_MODE=copy \
     UV_COMPILE_BYTECODE=1 \
     UV_PYTHON_DOWNLOADS=never \
-    UV_PYTHON=python3 \
+    UV_PYTHON=/usr/local/bin/python3 \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/srv
+    PYTHONPATH=/src
 
-# Create virtual environment and install dependencies
+# Create virtual environment
 RUN python -m venv /app
-COPY requirements.txt /tmp/
+
+# Copy project configuration and install dependencies
+COPY pyproject.toml /tmp/
 RUN --mount=type=cache,target=/root/.cache \
-    . /app/bin/activate && \
-    /usr/local/bin/uv pip install --requirement /tmp/requirements.txt
+    cd /tmp && \
+    uv pip sync \
+        --python=/app/bin/python \
+        pyproject.toml
+
+# Copy application files
+COPY . /src/
 
 ##########################################################################
 
@@ -50,13 +57,14 @@ RUN apt-get update -qy && apt-get install -qy \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY --from=build --chown=app:app /app /app
+COPY --from=build --chown=app:app /src /src
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
-COPY --chown=app:app . /src/
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 WORKDIR /src/
 USER app
-ENV PATH=/app/bin:$PATH
+ENV PATH=/app/bin:$PATH \
+    PYTHONPATH=/src
 
 EXPOSE 8000
 
