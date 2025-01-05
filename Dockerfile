@@ -9,20 +9,20 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONPATH /srv
 ENV PYTHONUNBUFFERED 1
 
-COPY requirements.txt /tmp/requirements.txt
-
-# add ",sharing=locked" if release should block until builder is complete
-RUN --mount=type=cache,target=/root/.cache,sharing=locked,id=pip \
-    python -m pip install --upgrade pip uv just-bin
-
-RUN --mount=type=cache,target=/root/.cache,sharing=locked,id=pip \
-    python -m uv pip install --system --requirement /tmp/requirements.txt
-
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     supervisor \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Install uv
+RUN --mount=type=cache,target=/root/.cache,sharing=locked,id=pip \
+    python -m pip install --upgrade pip uv
+
+# Copy and install dependencies
+COPY requirements.txt /tmp/requirements.txt
+RUN --mount=type=cache,target=/root/.cache,sharing=locked,id=pip \
+    uv pip install --system --requirement /tmp/requirements.txt
 
 FROM builder AS release
 
