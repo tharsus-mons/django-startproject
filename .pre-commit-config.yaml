@@ -40,15 +40,6 @@ repos:
       #   alias: autoformat
       # - id: djjs
       #   alias: autoformat
-  - repo: https://github.com/adamchainz/djade-pre-commit
-    rev: ""
-    hooks:
-      - id: djade
-        args: [--target-version, "5.1"]
-    rev: v2.14.0
-    hooks:
-      - id: pretty-format-toml
-        args: [--autofix]
   - repo: https://github.com/asottile/blacken-docs
     rev: 1.19.0
     hooks:

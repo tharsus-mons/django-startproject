@@ -22,4 +22,4 @@ class TestUserAPI:
     def test_delete_user(self, authenticated_client, user):
         response = authenticated_client.delete(reverse("api-1.0.0:delete_user"))
         assert response.status_code == 200
-        assert not User.objects.filter(id=user.id).exists() 
+        assert not User.objects.filter(id=user.id).exists()

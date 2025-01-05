@@ -13,4 +13,4 @@ def user():
 @pytest.fixture
 def authenticated_client(client, user):
     client.force_login(user)
-    return client 
+    return client

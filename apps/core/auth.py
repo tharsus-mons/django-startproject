@@ -8,6 +8,7 @@ User = get_user_model()
 try:
     from clerk_backend_api import Clerk
     from clerk_backend_api.jwks_helpers import AuthenticateRequestOptions
+
     CLERK_AVAILABLE = True
 except ImportError:
     CLERK_AVAILABLE = False
@@ -51,4 +52,4 @@ class ClerkAuth(HttpBearer):
 
             request.user = user
             return token
-        return None 
+        return None

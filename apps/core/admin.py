@@ -36,4 +36,4 @@ class CustomUserAdmin(UserAdmin):
                 "fields": ("email", "password1", "password2"),
             },
         ),
-    ) 
+    )
