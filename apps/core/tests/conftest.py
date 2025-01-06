@@ -13,4 +13,4 @@ def user():
 
 @pytest.fixture
 def authenticated_client():
-    return Client(HTTP_AUTHORIZATION="Bearer dummy-token")
+    return Client(headers={"authorization": "Bearer dummy-token"})

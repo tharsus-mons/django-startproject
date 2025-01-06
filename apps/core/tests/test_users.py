@@ -15,7 +15,7 @@ class TestUserAPI:
             request.user = user
             return user
 
-        patcher = patch('core.views.BearerAuth.authenticate', new=authenticate)
+        patcher = patch("core.views.BearerAuth.authenticate", new=authenticate)
         patcher.start()
         self.user = user
         yield
@@ -30,9 +30,7 @@ class TestUserAPI:
     def test_update_user(self, authenticated_client):
         data = {"first_name": "Test", "last_name": "User"}
         response = authenticated_client.patch(
-            reverse("api-1.0.0:update_user"),
-            data=json.dumps(data),
-            content_type="application/json"
+            reverse("api-1.0.0:update_user"), data=json.dumps(data), content_type="application/json"
         )
         assert response.status_code == 200
         self.user.refresh_from_db()
