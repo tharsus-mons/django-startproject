@@ -18,6 +18,7 @@ dependencies = [
     "supervisor>=4.2.5",
     "setuptools>=69.0.3",
     "Werkzeug>=3.0.0",
+    "sentry-sdk[django]>=2.19.2",
 ]
 
 [project.optional-dependencies]
