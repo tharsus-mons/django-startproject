@@ -63,6 +63,14 @@ jobs:
           uv pip install pytest pytest-django pytest-cov
           just test
 
+      - name: Collect static files
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings
+          DJANGO_SECRET_KEY: testing-key-not-secret
+        run: |
+          python manage.py collectstatic --noinput
+
       - name: Setup flyctl
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: superfly/flyctl-actions/setup-flyctl@master
