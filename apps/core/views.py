@@ -27,7 +27,6 @@ class UserSchema(Schema):
     email: str = ""
     first_name: str = ""
     last_name: str = ""
-    clerk_id: str = None
 
 
 @api.get("/users/me/", response=UserSchema)
@@ -37,7 +36,6 @@ def get_user(request):
         email=request.user.email,
         first_name=request.user.first_name,
         last_name=request.user.last_name,
-        clerk_id=getattr(request.user, "clerk_id", None),
     )
 
 
@@ -54,7 +52,6 @@ def update_user(request, data: UserSchema):
         "email": user.email,
         "first_name": user.first_name,
         "last_name": user.last_name,
-        "clerk_id": getattr(user, "clerk_id", None),
     }
 
 

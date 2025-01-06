@@ -1,6 +1,7 @@
 import pytest
 from django.contrib.auth import get_user_model
 from uuid import uuid4
+from django.test import Client
 
 User = get_user_model()
 
@@ -11,6 +12,5 @@ def user():
 
 
 @pytest.fixture
-def authenticated_client(client, user):
-    client.force_login(user)
-    return client
+def authenticated_client():
+    return Client(HTTP_AUTHORIZATION="Bearer dummy-token")
