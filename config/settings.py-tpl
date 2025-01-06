@@ -32,6 +32,8 @@ DEBUG = env.bool("DJANGO_DEBUG", default=False)
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 
+CSRF_TRUSTED_ORIGINS = [f"https://{u}" for u in env.list("CSRF_TRUSTED_ORIGINS", default=ALLOWED_HOSTS)]
+
 INTERNAL_IPS = []
 
 if DEBUG:
@@ -40,8 +42,6 @@ if DEBUG:
         "localhost",
         "127.0.0.1",
     ]
-
-CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 
 # Application definition
 
@@ -177,3 +177,13 @@ if USE_CLERK:
     CLERK_SECRET_KEY = env("CLERK_SECRET_KEY", default=None)
     CLERK_JWT_KEY = env("CLERK_JWT_KEY", default=None)
     FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:3000")
+
+# Sentry
+SENTRY_DSN = env("SENTRY_DSN", default="")
+
+if SENTRY_DSN:
+    import sentry_sdk
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+    )
