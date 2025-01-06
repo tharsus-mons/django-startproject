@@ -112,5 +112,10 @@ bootstrap *ARGS:
         --dockerfile Dockerfile \
         {{ ARGS }}
 
+    echo "\nIMPORTANT: Set required secrets to avoid 400 errors:"
+    echo "Run: flyctl secrets set ALLOWED_HOSTS=your-app.fly.dev"
+    echo "Add any other required secrets like DATABASE_URL, SECRET_KEY, etc."
+    echo "Example: flyctl secrets set SECRET_KEY=your-secret-key"
+
 @fly-deploy *ARGS:
     flyctl deploy {{ ARGS }}
